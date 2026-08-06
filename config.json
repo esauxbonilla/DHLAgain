@@ -2,8 +2,11 @@
   "MonitorFolder": "C:\\DHL\\Encolados",
   "SMTP_Server": "smtp.gmail.com",
   "Port": 587,
-  "From": "tsmxjitsuppliers@gmail.com",
-  "To": "ANGEL-ESAU.FLORES-BONILLA@t-systems.com",
+  "From": "",
+  "To": "",
+  "SmtpUser": "",
+  "SmtpPassword": "",
+  "UseEmail": false,
   "Test": true,
 
   "NtfyTopic": "monitor-carpeta-dhl",

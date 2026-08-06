@@ -9,10 +9,7 @@ $OutputEncoding = [System.Text.Encoding]::UTF8
 $configFile = Join-Path $PSScriptRoot "config.json"
 $LogFile = Join-Path $PSScriptRoot "Monitor.log"
 
-$Password = ConvertTo-SecureString "lbic fblv gvvn ygkc" -AsPlainText -Force
-$Credential = New-Object System.Management.Automation.PSCredential(
-    "tsmxjitsuppliers@gmail.com", $Password
-)
+$Credential = $null
 
 if (!(Test-Path $configFile)) {
     Write-Host "No se encontró config.json"
@@ -20,6 +17,23 @@ if (!(Test-Path $configFile)) {
 }
 
 $config = Get-Content $configFile -Encoding UTF8 | ConvertFrom-Json
+
+if ($config.UseEmail -eq $true) {
+    if ([string]::IsNullOrWhiteSpace($config.From) -or
+        [string]::IsNullOrWhiteSpace($config.To) -or
+        [string]::IsNullOrWhiteSpace($config.SMTP_Server) -or
+        [string]::IsNullOrWhiteSpace($config.SmtpUser) -or
+        [string]::IsNullOrWhiteSpace($config.SmtpPassword)) {
+        Write-Host "Falta configuración SMTP. Revisa From, To, SMTP_Server, SmtpUser y SmtpPassword."
+        exit
+    }
+
+    $Password = ConvertTo-SecureString $config.SmtpPassword -AsPlainText -Force
+    $Credential = New-Object System.Management.Automation.PSCredential(
+        $config.SmtpUser,
+        $Password
+    )
+}
 
 $carpeta = $config.MonitorFolder
 $modoPrueba = $config.Test
@@ -173,7 +187,7 @@ $listaArchivosTexto
 "@
     }
 }
-elseif ($config.UseEmail -eq $true -and $config.From -and $config.To) {
+elseif ($config.UseEmail -eq $true -and $config.From -and $config.To -and $Credential) {
     Send-MailMessage `
         -From $config.From `
         -To $config.To `

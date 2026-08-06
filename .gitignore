@@ -1,0 +1,5 @@
+Monitor.log
+*.log
+config.local.json
+*.tmp
+*.bak
