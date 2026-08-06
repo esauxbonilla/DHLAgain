@@ -1,4 +1,9 @@
 {
+  "Folders": [
+    "C:\\DHL\\Encolados",
+    "C:\\DHL\\NuevoArchivo",
+    "C:\\DHL\\Proveedores"
+  ],
   "MonitorFolder": "C:\\DHL\\Encolados",
   "SMTP_Server": "smtp.gmail.com",
   "Port": 587,

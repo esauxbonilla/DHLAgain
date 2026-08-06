@@ -1,0 +1,21 @@
+﻿Reporte de monitoreo DHL
+Fecha: 08/06/2026 17:02:31
+Asunto: ALERTA DHL - RevisiÃ³n de carpetas
+
+Carpeta: C:\DHL\Encolados
+Estado: ALERTA
+Detalle: Han transcurrido 1 horas y 9 minutos sin recibir archivos.
+Ãšltimo archivo: holaass.txt
+Fecha Ãºltima recepciÃ³n: 08/06/2026 15:52:48
+Archivos detectados:
+holaass.txt - 08/06/2026 15:52:48
+------------------------------
+Carpeta: C:\DHL\NuevoArchivo
+Estado: ALERTA
+Detalle: No se encontraron archivos en la carpeta monitoreada.
+Fecha: 08/06/2026 17:02:31
+------------------------------
+Carpeta: C:\DHL\Proveedores
+Estado: ALERTA
+Detalle: No se encontraron archivos en la carpeta monitoreada.
+Fecha: 08/06/2026 17:02:31

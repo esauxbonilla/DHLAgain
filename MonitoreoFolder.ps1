@@ -8,6 +8,7 @@ $OutputEncoding = [System.Text.Encoding]::UTF8
 
 $configFile = Join-Path $PSScriptRoot "config.json"
 $LogFile = Join-Path $PSScriptRoot "Monitor.log"
+$ReportFile = Join-Path $PSScriptRoot "salida.txt"
 
 $Credential = $null
 
@@ -35,112 +36,135 @@ if ($config.UseEmail -eq $true) {
     )
 }
 
-$carpeta = $config.MonitorFolder
+$carpetas = @()
+if ($config.Folders) {
+    $carpetas = @($config.Folders)
+}
+elseif ($config.MonitorFolder) {
+    $carpetas = @($config.MonitorFolder)
+}
+
 $modoPrueba = $config.Test
 
 Write-Host "Test = [$modoPrueba]"
 Write-Host "Tipo = $($modoPrueba.GetType().Name)"
 
-if ([string]::IsNullOrWhiteSpace($carpeta)) {
-    Write-Host "MonitorFolder no está configurado en config.json"
-    exit
-}
-
-if (!(Test-Path $carpeta)) {
-    Write-Host "La carpeta configurada no existe: $carpeta"
+if (-not $carpetas -or $carpetas.Count -eq 0) {
+    Write-Host "No hay carpetas configuradas en config.json"
     exit
 }
 
 $limite = (Get-Date).AddHours(-24)
+$resumenes = @()
+$resumenesCortos = @()
+$hayAlertas = $false
+$hayCarpetasValidas = $false
 
-$archivos = Get-ChildItem -Path $carpeta -File -ErrorAction SilentlyContinue | Where-Object {
-    $_.LastWriteTime -ge $limite
+foreach ($carpeta in $carpetas) {
+    if ([string]::IsNullOrWhiteSpace($carpeta)) {
+        continue
+    }
+
+    if (!(Test-Path $carpeta)) {
+        $resumenes += @"
+Carpeta: $carpeta
+Estado: ERROR
+Detalle: La carpeta configurada no existe.
+"@
+        $resumenesCortos += "ERROR | $(Split-Path $carpeta -Leaf): carpeta no existe"
+        $hayAlertas = $true
+        continue
+    }
+
+    $hayCarpetasValidas = $true
+    $archivos = Get-ChildItem -Path $carpeta -File -ErrorAction SilentlyContinue | Where-Object {
+        $_.LastWriteTime -ge $limite
+    }
+
+    $cantidad = @($archivos).Count
+    $listaArchivos = $archivos |
+        Sort-Object LastWriteTime -Descending |
+        Select-Object -First 50 |
+        ForEach-Object {
+            "$($_.Name) - $($_.LastWriteTime)"
+        }
+    $listaArchivosTexto = $listaArchivos -join "`r`n"
+
+    $ultimoArchivo = Get-ChildItem `
+        -Path $carpeta `
+        -File `
+        -ErrorAction SilentlyContinue |
+        Sort-Object LastWriteTime -Descending |
+        Select-Object -First 1
+
+    if (-not $ultimoArchivo) {
+        $resumenes += @"
+Carpeta: $carpeta
+Estado: ALERTA
+Detalle: No se encontraron archivos en la carpeta monitoreada.
+Fecha: $(Get-Date)
+"@
+        $resumenesCortos += "ALERTA | $(Split-Path $carpeta -Leaf): sin archivos"
+        $hayAlertas = $true
+        continue
+    }
+
+    $ultimaRecepcion = $ultimoArchivo.LastWriteTime
+    $tiempoSinArchivos = New-TimeSpan -Start $ultimaRecepcion -End (Get-Date)
+    $horasSinArchivos = [int]$tiempoSinArchivos.TotalHours
+    $minutosSinArchivos = $tiempoSinArchivos.Minutes
+
+    if ($horasSinArchivos -ge $config.NoFilesThresholdHours) {
+        $estado = "ALERTA"
+        $detalle = "Han transcurrido $horasSinArchivos horas y $minutosSinArchivos minutos sin recibir archivos."
+        $resumenesCortos += "ALERTA | $(Split-Path $carpeta -Leaf): $horasSinArchivos h $minutosSinArchivos min sin recibir"
+        $hayAlertas = $true
+    }
+    else {
+        $estado = "OK"
+        $detalle = "Se recibieron $cantidad archivo(s) en las últimas 24 horas."
+        $resumenesCortos += "OK | $(Split-Path $carpeta -Leaf): $cantidad archivo(s), último $($ultimoArchivo.Name)"
+    }
+
+    $resumenes += @"
+Carpeta: $carpeta
+Estado: $estado
+Detalle: $detalle
+Último archivo: $($ultimoArchivo.Name)
+Fecha última recepción: $($ultimoArchivo.LastWriteTime)
+Archivos detectados:
+$listaArchivosTexto
+"@
 }
 
-$cantidad = @($archivos).Count
-$listaArchivos = $archivos |
-    Sort-Object LastWriteTime -Descending |
-    Select-Object -First 50 |
-    ForEach-Object {
-        "$($_.Name) - $($_.LastWriteTime)"
-    }
-$listaArchivosTexto = $listaArchivos -join "`r`n"
-
-$ultimoArchivo = Get-ChildItem `
-    -Path $carpeta `
-    -File `
-    -ErrorAction SilentlyContinue |
-    Sort-Object LastWriteTime -Descending |
-    Select-Object -First 1
-
-if (-not $ultimoArchivo) {
-    $Subject = "ALERTA DHL - Carpeta sin archivos"
-    $Message = @"
-No se encontraron archivos en la carpeta monitoreada.
-
-Carpeta:
-$carpeta
-
-Fecha:
-$(Get-Date)
-"@
-
-    Write-Host $Message
-
-    if ($config.NtfyTopic) {
-        Invoke-RestMethod `
-            -Method Post `
-            -Uri "https://ntfy.sh/$($config.NtfyTopic)" `
-            -Headers @{
-                Title = $Subject
-                Priority = "urgent"
-            } `
-            -Body $Message
-    }
-
-    Add-Content -Path $LogFile -Value @"
-$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') | $Subject
-
-$Message
-
---------------------------------------------------
-"@
+if (-not $hayCarpetasValidas -and $resumenes.Count -eq 0) {
+    Write-Host "No hay carpetas válidas para monitorear."
     exit
 }
 
-$ultimaRecepcion = $ultimoArchivo.LastWriteTime
-$tiempoSinArchivos = New-TimeSpan -Start $ultimaRecepcion -End (Get-Date)
-$horasSinArchivos = [int]$tiempoSinArchivos.TotalHours
-$minutosSinArchivos = $tiempoSinArchivos.Minutes
-
-if ($horasSinArchivos -ge $config.NoFilesThresholdHours) {
-    $Subject = "ALERTA DHL - Sin archivos recibidos"
-    $Message = @"
-Han transcurrido $horasSinArchivos horas y $minutosSinArchivos minutos sin recibir archivos.
-
-Último archivo:
-$($ultimoArchivo.Name)
-
-Fecha última recepción:
-$($ultimoArchivo.LastWriteTime)
-"@
+if ($hayAlertas) {
+    $Subject = "ALERTA DHL - Revisión de carpetas"
 }
 else {
-    $Subject = "Recepción de archivos"
-    $Message = @"
-Se recibieron $cantidad archivo(s) en las últimas 24 horas.
-
-Archivos recibidos:
-
-$listaArchivosTexto
-
-Último archivo:
-$($ultimoArchivo.Name)
-
-Fecha última recepción:
-$($ultimoArchivo.LastWriteTime)
-"@
+    $Subject = "Recepción de archivos - Resumen DHL"
 }
+
+$Message = ($resumenes -join "`r`n------------------------------`r`n")
+$ShortMessage = ($resumenesCortos | Select-Object -First 6) -join "`r`n"
+
+if ([string]::IsNullOrWhiteSpace($ShortMessage)) {
+    $ShortMessage = "Monitoreo ejecutado. Revisar log local para más detalle."
+}
+
+$DetailedReport = @"
+Reporte de monitoreo DHL
+Fecha: $(Get-Date)
+Asunto: $Subject
+
+$Message
+"@
+
+Set-Content -Path $ReportFile -Value $DetailedReport -Encoding UTF8
 
 Write-Host $Message
 
@@ -152,7 +176,16 @@ if ($config.NtfyTopic) {
             Title = $Subject
             Priority = "urgent"
         } `
-        -Body $Message
+        -Body $ShortMessage
+
+    Invoke-RestMethod `
+        -Method Put `
+        -Uri "https://ntfy.sh/$($config.NtfyTopic)" `
+        -Headers @{
+            Title = "$Subject - Detalle"
+            Filename = "salida.txt"
+        } `
+        -InFile $ReportFile
 }
 
 if ($modoPrueba -eq $true) {
@@ -175,15 +208,14 @@ Monitor activo
 Fecha:
 $(Get-Date)
 
-Carpeta:
-$carpeta
+Resumen corto:
+$ShortMessage
 
-Archivos últimas 24 horas:
-$cantidad
+Reporte detallado:
+$ReportFile
 
-Archivos detectados:
-
-$listaArchivosTexto
+Detalle completo en log local:
+$LogFile
 "@
     }
 }
@@ -202,10 +234,8 @@ elseif ($config.UseEmail -eq $true -and $config.From -and $config.To -and $Crede
 $LogMessage = @"
 $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') | $Subject
 
-Cantidad: $cantidad
-
-Archivos:
-$listaArchivosTexto
+Resumen:
+$Message
 
 --------------------------------------------------
 "@

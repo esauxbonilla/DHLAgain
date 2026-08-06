@@ -352,3 +352,143 @@ Archivos:
 holaass.txt - 08/06/2026 15:52:48
 
 --------------------------------------------------
+2026-08-06 16:42:14 | ALERTA DHL - Sin archivos recibidos
+
+Cantidad: 1
+
+Archivos:
+holaass.txt - 08/06/2026 15:52:48
+
+--------------------------------------------------
+2026-08-06 16:50:50 | ALERTA DHL - Revisión de carpetas
+
+Resumen:
+Carpeta: C:\DHL\Encolados
+Estado: ALERTA
+Detalle: Han transcurrido 1 horas y 57 minutos sin recibir archivos.
+Último archivo: holaass.txt
+Fecha última recepción: 08/06/2026 15:52:48
+Archivos detectados:
+holaass.txt - 08/06/2026 15:52:48
+------------------------------
+Carpeta: C:\DHL\NuevoArchivo
+Estado: ALERTA
+Detalle: No se encontraron archivos en la carpeta monitoreada.
+Fecha: 08/06/2026 16:50:40
+------------------------------
+Carpeta: C:\DHL\Proveedores
+Estado: ALERTA
+Detalle: No se encontraron archivos en la carpeta monitoreada.
+Fecha: 08/06/2026 16:50:40
+
+--------------------------------------------------
+2026-08-06 16:52:14 | ALERTA DHL - Revisión de carpetas
+
+Resumen:
+Carpeta: C:\DHL\Encolados
+Estado: ALERTA
+Detalle: Han transcurrido 1 horas y 59 minutos sin recibir archivos.
+Último archivo: holaass.txt
+Fecha última recepción: 08/06/2026 15:52:48
+Archivos detectados:
+holaass.txt - 08/06/2026 15:52:48
+------------------------------
+Carpeta: C:\DHL\NuevoArchivo
+Estado: ALERTA
+Detalle: No se encontraron archivos en la carpeta monitoreada.
+Fecha: 08/06/2026 16:52:11
+------------------------------
+Carpeta: C:\DHL\Proveedores
+Estado: ALERTA
+Detalle: No se encontraron archivos en la carpeta monitoreada.
+Fecha: 08/06/2026 16:52:11
+
+--------------------------------------------------
+2026-08-06 16:56:55 | ALERTA DHL - Revisión de carpetas
+
+Resumen:
+Carpeta: C:\DHL\Encolados
+Estado: ALERTA
+Detalle: Han transcurrido 1 horas y 4 minutos sin recibir archivos.
+Último archivo: holaass.txt
+Fecha última recepción: 08/06/2026 15:52:48
+Archivos detectados:
+holaass.txt - 08/06/2026 15:52:48
+------------------------------
+Carpeta: C:\DHL\NuevoArchivo
+Estado: ALERTA
+Detalle: No se encontraron archivos en la carpeta monitoreada.
+Fecha: 08/06/2026 16:56:54
+------------------------------
+Carpeta: C:\DHL\Proveedores
+Estado: ALERTA
+Detalle: No se encontraron archivos en la carpeta monitoreada.
+Fecha: 08/06/2026 16:56:54
+
+--------------------------------------------------
+2026-08-06 16:58:58 | ALERTA DHL - Revisión de carpetas
+
+Resumen:
+Carpeta: C:\DHL\Encolados
+Estado: ALERTA
+Detalle: Han transcurrido 1 horas y 6 minutos sin recibir archivos.
+Último archivo: holaass.txt
+Fecha última recepción: 08/06/2026 15:52:48
+Archivos detectados:
+holaass.txt - 08/06/2026 15:52:48
+------------------------------
+Carpeta: C:\DHL\NuevoArchivo
+Estado: ALERTA
+Detalle: No se encontraron archivos en la carpeta monitoreada.
+Fecha: 08/06/2026 16:58:56
+------------------------------
+Carpeta: C:\DHL\Proveedores
+Estado: ALERTA
+Detalle: No se encontraron archivos en la carpeta monitoreada.
+Fecha: 08/06/2026 16:58:56
+
+--------------------------------------------------
+2026-08-06 17:02:17 | ALERTA DHL - Revisión de carpetas
+
+Resumen:
+Carpeta: C:\DHL\Encolados
+Estado: ALERTA
+Detalle: Han transcurrido 1 horas y 9 minutos sin recibir archivos.
+Último archivo: holaass.txt
+Fecha última recepción: 08/06/2026 15:52:48
+Archivos detectados:
+holaass.txt - 08/06/2026 15:52:48
+------------------------------
+Carpeta: C:\DHL\NuevoArchivo
+Estado: ALERTA
+Detalle: No se encontraron archivos en la carpeta monitoreada.
+Fecha: 08/06/2026 17:02:14
+------------------------------
+Carpeta: C:\DHL\Proveedores
+Estado: ALERTA
+Detalle: No se encontraron archivos en la carpeta monitoreada.
+Fecha: 08/06/2026 17:02:14
+
+--------------------------------------------------
+2026-08-06 17:02:33 | ALERTA DHL - Revisión de carpetas
+
+Resumen:
+Carpeta: C:\DHL\Encolados
+Estado: ALERTA
+Detalle: Han transcurrido 1 horas y 9 minutos sin recibir archivos.
+Último archivo: holaass.txt
+Fecha última recepción: 08/06/2026 15:52:48
+Archivos detectados:
+holaass.txt - 08/06/2026 15:52:48
+------------------------------
+Carpeta: C:\DHL\NuevoArchivo
+Estado: ALERTA
+Detalle: No se encontraron archivos en la carpeta monitoreada.
+Fecha: 08/06/2026 17:02:31
+------------------------------
+Carpeta: C:\DHL\Proveedores
+Estado: ALERTA
+Detalle: No se encontraron archivos en la carpeta monitoreada.
+Fecha: 08/06/2026 17:02:31
+
+--------------------------------------------------
